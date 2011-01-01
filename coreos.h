@@ -1,5 +1,5 @@
 /*
- * FwPKG Tool - Tool to encrypt/decrypt PS3 firmware's PKG files.
+ * FwTool - Tool to encrypt/decrypt PS3 firmware's PKG files.
  *
  * Copyright (C) 2010  George Hotz (geohot)
  * Copyright (C) 2010  Miguel Boton (waninkoko)
@@ -18,47 +18,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __PKG_H__
-#define __PKG_H__
+#ifndef __COREOS_H__
+#define __COREOS_H__
 
 #include "types.h"
 
-/* PKG header */
-struct pkgHdr {
-	char magic[4];		/* "SCE\0" */
+/* CoreOS header */
+struct coreHdr {
+	u32 unk;
+	u32 files;
+	u64 size;
 
-	u32 version;		/* 2 */
-	u16 attribute;		/* 0x00 */
-	u16 category;		/* 0x03 */
-
-	u32 meta_offset;
-
-	u64 file_offset;
-	u64 file_size;
+	u8 entries[];
 };
 
-/* PKG metadata header */
-struct pkgMHdr {
-	u8 unk[32];
-
-	u8  key[16];		/* Metadata key */
-	u8 pad1[16];
-
-	u8   iv[16];		/* Metadata IV */
-	u8 pad2[16];
-
-	u8 data[];
+/* CoreOS entry */
+struct coreEntry {
+	u64  offset;
+	u64  filesize;
+	char filename[32];
 };
 
-/* PKG metadata */
-struct pkgMeta {
-	u8  unk1[128];
-	u64 data_offset;
-	u64 data_size;
-
-	u8  unk2[320];
-	u8  pkg_key[16];	/* PKG key */
-	u8  pkg_iv [16];	/* PKG IV */
-};
-
-#endif	/* __PKG_H__ */
+#endif	/* __COREOS_H__ */

@@ -2,13 +2,19 @@ CC	= gcc
 CFLAGS	= -Wall
 LDFLAGS	= -lcrypto -lz
 
-TARGET	= fwpkg
-OBJS	= aes.o fwpkg.o zlib.o
+TARGETS		= coreos_tool fwpkg
+
+COREOS_OBJS	= coreos_tool.o utils.o
+FWPKG_OBJS	= aes.o fwpkg.o utils.o zlib.o
 
 
-all: $(TARGET)
+all: $(TARGETS)
 
-$(TARGET): $(OBJS)
+coreos_tool: $(COREOS_OBJS)
+	@echo -e "  LD\t$@"
+	@$(CC) $^ -o $@ $(LDFLAGS)
+
+fwpkg: $(FWPKG_OBJS)
 	@echo -e "  LD\t$@"
 	@$(CC) $^ -o $@ $(LDFLAGS)
 
@@ -18,4 +24,4 @@ $(TARGET): $(OBJS)
 
 clean:
 	@echo -e "Cleaning..."
-	@rm -f $(OBJS) $(TARGET) *~
+	@rm -f $(TARGETS) *.o *~

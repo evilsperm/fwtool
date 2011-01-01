@@ -1,5 +1,5 @@
 /*
- * FwPKG Tool - Tool to encrypt/decrypt PS3 firmware's PKG files.
+ * FwTool - Tool to encrypt/decrypt PS3 firmware's PKG files.
  *
  * Copyright (C) 2010  George Hotz (geohot)
  * Copyright (C) 2010  Miguel Boton (waninkoko)
@@ -27,13 +27,14 @@
 
 #include "aes.h"
 #include "endian.h"
-#include "pkg.h"
+#include "fwpkg.h"
 #include "types.h"
+#include "utils.h"
 #include "zlib.h"
 
 /* Constants */
 #define BUF_SIZE	0x1000000
-#define MEGABYTE	1048576.0
+#define MEGABYTE	(1024.0 * 1024.0)
 
 /* PKG AES key/IV */
 static u8 pkg_riv[] = {
@@ -67,70 +68,6 @@ static void Fill_Random(u8 *buffer, u32 len)
 	/* Fill buffer */
 	for (i = 0; i < len; ++i)
 		buffer[i] = rand() % (UCHAR_MAX + 1);
-}
-
-static s32 File_Read(const char *filename, u8 **buffer)
-{
-	FILE *fp  = NULL;
-	u8   *buf = NULL;
-
-	size_t  len;
-	ssize_t ret = -1;
-
-	/* Open file */
-	fp = fopen(filename, "rb");
-	if (!fp)
-		return -errno;
-
-	/* Get size */
-	fseek(fp, 0, SEEK_END);
-	len = ftell(fp);
-	rewind(fp);
-
-	/* Allocate buffer */
-	buf = malloc(len);
-	if (!buf)
-		goto out;
-
-	/* Read file */
-	ret = fread(buf, 1, len, fp);
-
-out:
-	/* Close file */
-	if(fp) fclose(fp);
-
-	/* Output buffer */
-	*buffer = (buf) ? buf : NULL;
-
-	return (ret != len) ? -errno : ret;
-}
-
-static s32 File_Write(const char *filename, u8 *buffer, size_t len)
-{
-	FILE *fp = NULL;
-
-	size_t  cnt;
-	ssize_t ret;
-
-	/* Open file */
-	fp = fopen(filename, "wb");
-	if (!fp)
-		return -errno;
-
-	/* Write loop */
-	for (cnt = 0; cnt < len; cnt += ret) {
-		/* Write to file */
-		ret = fwrite(buffer + cnt, 1, len - cnt, fp);
-
-		/* Write error */
-		if (ret < 0)
-			break;
-	}
-
-	/* Close file */
-	fclose(fp);
-
-	return (cnt != len) ? -errno : cnt;
 }
 
 static s32 Pkg_Encrypt(u8 *inbuf, u32 inlen, u8 *outbuf, u32 outlen, u8 *key, u8 *iv, u8 *metaKey, u8 *metaIV, u8 deflate)

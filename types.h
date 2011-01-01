@@ -1,5 +1,5 @@
 /*
- * FwPKG Tool - Tool to encrypt/decrypt PS3 firmware's PKG files.
+ * FwTool - Tool to encrypt/decrypt PS3 firmware's PKG files.
  *
  * Copyright (C) 2010  George Hotz (geohot)
  * Copyright (C) 2010  Miguel Boton (waninkoko)
